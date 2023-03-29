@@ -1,4 +1,4 @@
-# ice_assessment
+# assessment
 
 This project contains backend code for an assessment test implemented with Django and DRF.
 
