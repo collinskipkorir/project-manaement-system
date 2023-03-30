@@ -35,10 +35,13 @@ class UpdateProjectView(UpdateAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         if serializer.is_valid(raise_exception=True):
-            # Incrementally update actual hours using the F expression
-            if 'actual_hours' in serializer.validated_data:
-                instance.actual_hours = F('actual_hours') + serializer.validated_data['actual_hours']
-                self.perform_update(serializer)
-            self.perform_update(serializer)
+            
+            # Incrementally update actual hours using the lock select for update method
+            proj = Project.objects.select_for_update().get(id=instance.id)
+            proj.actual_hours += serializer.validated_data['actual_hours']
+            proj.save()
+            
+            serializer = self.serializer_class(proj, many=False)
+            
             return Response({"status": "success", "data": serializer.data},  status=status.HTTP_200_OK)
         
