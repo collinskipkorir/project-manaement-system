@@ -4,7 +4,7 @@ localserver:
 setup:
 	docker-compose up -d --build
 
-drop_container:
+dropcontainer:
 	docker-compose down -v
 
 migrate:
